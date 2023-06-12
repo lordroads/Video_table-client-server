@@ -1,0 +1,8 @@
+{
+  "PathToVideoDirectory": "E:\\WorkTable\\video_for_test",
+  "IpAddress": "127.0.0.1",
+  "Port": 5000,
+  "IsFadeIn": true,
+  "SpeedFade": 0.01,
+  "StepFade": 0.01
+}
