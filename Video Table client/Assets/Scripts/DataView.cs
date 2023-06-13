@@ -50,7 +50,7 @@ public class DataView : MonoBehaviour
 
         SettingController.Save(settings);
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
     }
 
     private bool ValidateIPv4(string ipString)

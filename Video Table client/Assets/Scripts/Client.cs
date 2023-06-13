@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Client : MonoBehaviour
 {
@@ -90,6 +91,8 @@ public class Client : MonoBehaviour
                     }
                 }
             }
+
+            socketConnection = null;
         }
         catch (SocketException socketException)
         {
@@ -117,27 +120,72 @@ public class Client : MonoBehaviour
                 // Write byte array to socketConnection stream.                 
                 stream.Write(clientMessageAsByteArray, 0, clientMessageAsByteArray.Length);
             }
-            socketConnection = null;
         }
         catch (SocketException socketException)
         {
             Debug.Log("Socket exception: " + socketException);
         }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SEND ERROR]: {e.Message}");
+        }
+    }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        Debug.Log($"Focus: {hasFocus}");
+        if (hasFocus)
+        {
+            SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
+        }
+        else
+        {
+            if (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                Send("off");
+                Debug.Log("NOT Focus!");
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                socketConnection = null;
+            }
+        }
+    }
+
+    void OnApplicationPause(bool pauseStatus)
+    {
+        Debug.Log($"Pause: {pauseStatus}");
+        if (pauseStatus)
+        {
+            if (!_cancellationTokenSource.IsCancellationRequested)
+            {
+                Send("off");
+                Debug.Log("Quit Pause");
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                socketConnection = null;
+            }
+        }
     }
 
     void OnApplicationQuit()
     {
-        Send("off");
-        Debug.Log("Quit");
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-        socketConnection = null;
+        if (!_cancellationTokenSource.IsCancellationRequested)
+        {
+            Send("off");
+            Debug.Log("Quit");
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            socketConnection = null;
+        }
     }
 
     ~Client(){
-        Send("off");
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-        socketConnection = null;
+        if (!_cancellationTokenSource.IsCancellationRequested)
+        {
+            Send("off");
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            socketConnection = null;
+        }
     }
 }

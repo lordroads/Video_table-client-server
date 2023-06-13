@@ -96,6 +96,7 @@ public class ServerTcp : MonoBehaviour
 
                             if (clientMessage == "off")
                             {
+                                connectedTcpClient = null;
                                 break;
                             }
                         } 					
@@ -106,9 +107,13 @@ public class ServerTcp : MonoBehaviour
             Debug.Log("Server - not listened!");
         } 		
 		catch (SocketException socketException) {
-            Debug.Log("SocketException " + socketException.ToString()); 		
-		}     
-	}  	
+            Debug.Log("SocketException " + socketException.ToString());
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[LISTNER]: {e.Message}");
+        }
+    }  	
 	/// <summary> 	
 	/// Send message to client using socket connection. 	
 	/// </summary> 	
@@ -131,6 +136,10 @@ public class ServerTcp : MonoBehaviour
 		catch (SocketException socketException) {             
 			Debug.Log("Socket exception: " + socketException);         
 		} 	
+		catch(Exception e) {
+			Debug.LogError($"[SEND]: {e.Message}");
+			connectedTcpClient = null;
+		}
 	}
 
     void OnApplicationFocus(bool hasFocus)

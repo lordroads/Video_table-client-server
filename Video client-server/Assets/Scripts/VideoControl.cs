@@ -72,8 +72,6 @@ namespace Assets.Scripts
 
                 rawImage.color = color;
 
-                Debug.Log($"Color a = {color.a}");
-
                 yield return new WaitForSeconds(speedFade);
             }
         }
