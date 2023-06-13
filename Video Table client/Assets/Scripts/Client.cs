@@ -134,7 +134,11 @@ public class Client : MonoBehaviour
     void OnApplicationFocus(bool hasFocus)
     {
         Debug.Log($"Focus: {hasFocus}");
-        if (hasFocus)
+
+        var adminLayer = FindObjectOfType<LayoutControl>().layouts[2];
+        var isOpenLayer = adminLayer is null ? false : adminLayer.GetComponentInChildren<Animator>().GetBool("isOpen");
+
+        if (hasFocus & !isOpenLayer)
         {
             SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
         }
