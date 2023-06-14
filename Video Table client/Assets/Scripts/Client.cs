@@ -13,7 +13,7 @@ public class Client : MonoBehaviour
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
 
-    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private CancellationTokenSource _cancellationTokenSource;
     #endregion
 
     public static event Action<string> ActionReceivedMessage;
@@ -53,6 +53,8 @@ public class Client : MonoBehaviour
     {
         try
         {
+            _cancellationTokenSource = new CancellationTokenSource();
+
             clientReceiveThread = new Thread(() => ListenForData(_cancellationTokenSource.Token));
             clientReceiveThread.IsBackground = true;
             clientReceiveThread.Start();
@@ -98,6 +100,10 @@ public class Client : MonoBehaviour
         {
             Debug.Log("Socket exception: " + socketException);
         }
+        catch (Exception e)
+        {
+            Debug.LogError($"[LISTNER ERROR]: {e}");
+        }
     }
 
     /// <summary> 	
@@ -127,7 +133,7 @@ public class Client : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"[SEND ERROR]: {e.Message}");
+            Debug.LogError($"[SEND ERROR]: {e}");
         }
     }
 

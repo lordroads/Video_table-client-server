@@ -27,7 +27,7 @@ public class ServerTcp : MonoBehaviour
 	/// </summary> 	
 	private TcpClient connectedTcpClient; 	
 	
-	private  CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+	private  CancellationTokenSource _cancellationTokenSource;
     #endregion
 
     public static event Action<string> ActionReceivedMessage;
@@ -51,7 +51,9 @@ public class ServerTcp : MonoBehaviour
 		ipAddress = SettingController.Settings.IpAddress;
 		port = SettingController.Settings.Port;
 
-		tcpListenerThread = new Thread (() => ListenForIncommingRequests(_cancellationTokenSource.Token)); 		
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        tcpListenerThread = new Thread (() => ListenForIncommingRequests(_cancellationTokenSource.Token)); 		
 		tcpListenerThread.IsBackground = true;
 		tcpListenerThread.Name = "SERVER_TCP_APP";
 		tcpListenerThread.Start(); 	
@@ -90,7 +92,7 @@ public class ServerTcp : MonoBehaviour
 							var incommingData = new byte[length]; 							
 							Array.Copy(bytes, 0, incommingData, 0, length);  							
 							string clientMessage = Encoding.ASCII.GetString(incommingData);
-							//Debug.Log("client message received as: " + clientMessage); 
+							Debug.Log("client message received as: " + clientMessage); 
 
 							ActionReceivedMessage?.Invoke(clientMessage);
 
@@ -111,7 +113,7 @@ public class ServerTcp : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError($"[LISTNER]: {e.Message}");
+            Debug.LogError($"[LISTNER ERROR]: {e}");
         }
     }  	
 	/// <summary> 	
@@ -137,7 +139,7 @@ public class ServerTcp : MonoBehaviour
 			Debug.Log("Socket exception: " + socketException);         
 		} 	
 		catch(Exception e) {
-			Debug.LogError($"[SEND]: {e.Message}");
+			Debug.LogError($"[SEND ERROR]: {e}");
 			connectedTcpClient = null;
 		}
 	}
